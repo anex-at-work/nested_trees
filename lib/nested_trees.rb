@@ -1,6 +1,6 @@
 module NestedTrees
   def nested_trees_before_create
-    max = (self.class.maximum(nested_trees_options[:right_key], :conditions => __nested_key_conditions) || 0) + 1
+    max = (self.class.where(__nested_key_conditions).maximum(nested_trees_options[:right_key]) || 0) + 1
     self[nested_trees_options[:left_key]] = max
     self[nested_trees_options[:right_key]] = max + 1
   end
@@ -60,19 +60,19 @@ module NestedTrees
           size = self[rk] - self[lk] + 1
           dif = self[lk] - 1
           bo = {:left => 1, :right => self[lk] - 1}
-        when :child # v0.0.1 test NOT completed
+        when :child
           if target[lk] > self[lk]
             size = self[lk] - self[rk] - 1
-            dif = self[rk] - target[lk] # dif ok
+            dif = self[rk] - target[lk]
             bo = {:left => self[rk] + 1, :right => target[lk]}
           else
             size = self[rk] - self[lk] + 1
-            dif = self[lk] - target[lk] - 1 # dif of
+            dif = self[lk] - target[lk] - 1
             bo = {:left => target[lk] + 1, :right => self[rk]}
           end
         end
         
-        self.class.update_all [%(
+        self.class.where(__nested_key_conditions).update_all [%(
           #{__qlk} = CASE
             WHEN #{__qlk} BETWEEN :bsl AND :bsr
               THEN #{__qlk} - :dif
@@ -88,17 +88,18 @@ module NestedTrees
         ), {
           :bsl => bs[:left], :bsr => bs[:right],
           :bol => bo[:left], :bor => bo[:right],
-          :dif => dif, :size => size}], __nested_key_conditions
+          :dif => dif, :size => size}]
       end
       options[:target].reload unless options[:target].nil?
     end
     
+    # @todo: change to real quoting
     def __quoted_left_key
-      connection.quote_column_name nested_trees_options[:left_key]
+      %("#{nested_trees_options[:left_key]}")
     end
     
     def __quoted_right_key
-      connection.quote_column_name nested_trees_options[:right_key]
+      %("#{nested_trees_options[:right_key]}")
     end
     
     def __nested_key_conditions

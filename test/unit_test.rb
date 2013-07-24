@@ -29,7 +29,7 @@ class UnitTest < Test::Unit::TestCase
         right_key INTEGER NOT NULL
       );
     )
-    #ActiveRecord::Base.logger = Logger.new(STDOUT)
+    ActiveRecord::Base.logger = Logger.new(STDOUT)
   end
  
   def test_default_options
