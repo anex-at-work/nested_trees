@@ -12,7 +12,7 @@ class NestedTreesViewTo<%= model_name.pluralize %> < ActiveRecord::Migration
             AND <%= model_name.tableize %>_parent.right_key > <%= model_name.tableize %>.right_key
             <%= options.key_fields.map do |key|
               %( AND #{model_name.tableize}.#{key} = #{model_name.tableize}_parent.#{key})
-            end.join%>
+            end.join %>
           ORDER BY <%= model_name.tableize %>.left_key DESC
          LIMIT 1) AS parent
        FROM <%= model_name.tableize %>, <%= model_name.tableize %> <%= model_name.tableize %>_parent
@@ -20,11 +20,11 @@ class NestedTreesViewTo<%= model_name.pluralize %> < ActiveRecord::Migration
          AND <%= model_name.tableize %>.left_key <= <%= model_name.tableize %>_parent.right_key
          <%= options.key_fields.map do |key|
             %( AND #{model_name.tableize}.#{key} = #{model_name.tableize}_parent.#{key})
-          end.join%>
+          end.join %>
        GROUP BY
          <%= (options.key_fields + [options.value_field] + %w(left_key right_key id)).map do |key|
               %(#{model_name.tableize}.#{key})
-            end.join ', '%>
+            end.join ', ' %>
        ORDER BY <%= model_name.tableize %>.left_key;
     )
   end
