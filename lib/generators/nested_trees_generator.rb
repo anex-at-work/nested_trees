@@ -4,7 +4,7 @@ class NestedTreesGenerator < Rails::Generators::Base
   desc 'Generate migration view for model'
   argument :model_name, :type => :string
   class_option :key_fields, :type => :array, :default => [], :desc => 'additional nested key'
-  class_option :value_field, :type => :string, :required => true, :desc => 'additional nested key'
+  class_option :value_field, :type => :string, :required => true, :desc => 'REQUIRED value field (for parent)'
   source_root File.expand_path('../templates', __FILE__)
   
   def self.next_migration_number(dirname)
